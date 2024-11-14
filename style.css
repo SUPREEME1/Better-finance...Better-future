@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #d8dee8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.app-container {
+    max-width: 800px;
+    width: 90%;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #2e2d2d;
+}
+
+.overview p, .forms h3 {
+    color: #555;
+}
+
+button {
+    padding: 8px 16px;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #125ae9;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: #ece9f2;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
