@@ -2,14 +2,21 @@ let incomeTotal = 0, expenseTotal = 0, savingsGoal = 0, monthlyIncome = 0;
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadData();
     loadTransactions();
     updateOverview();
     renderCharts();
 });
 
 function setMonthlySetup() {
-    monthlyIncome = parseFloat(document.getElementById("income").value);
-    savingsGoal = parseFloat(document.getElementById("savingsGoal").value);
+    monthlyIncome = parseFloat(document.getElementById("income").value) || 0;
+    savingsGoal = parseFloat(document.getElementById("savingsGoal").value) || 0;
+    
+    // Reset income and expense totals for a new month
+    incomeTotal = 0;
+    expenseTotal = 0;
+    transactions = [];
+
     updateOverview();
     saveData();
 }
@@ -17,8 +24,12 @@ function setMonthlySetup() {
 function addIncome() {
     const source = document.getElementById("incomeSource").value;
     const amount = parseFloat(document.getElementById("incomeAmount").value);
+    
+    if (!amount || amount <= 0) return alert("Enter a valid income amount");
+
     transactions.push({ type: 'income', source, amount, date: new Date().toLocaleDateString() });
     incomeTotal += amount;
+
     updateOverview();
     saveData();
 }
@@ -27,8 +38,12 @@ function addExpense() {
     const name = document.getElementById("expenseName").value;
     const amount = parseFloat(document.getElementById("expenseAmount").value);
     const category = document.getElementById("expenseCategory").value;
+    
+    if (!amount || amount <= 0) return alert("Enter a valid expense amount");
+
     transactions.push({ type: 'expense', name, amount, category, date: new Date().toLocaleDateString() });
     expenseTotal += amount;
+
     updateOverview();
     saveData();
 }
@@ -40,31 +55,44 @@ function deleteTransaction(index) {
         expenseTotal -= transactions[index].amount;
     }
     transactions.splice(index, 1);
+
     updateOverview();
     saveData();
 }
 
 function updateOverview() {
-    document.getElementById("totalIncome").innerText = incomeTotal;
-    document.getElementById("totalExpenses").innerText = expenseTotal;
-    const remainingBudget = monthlyIncome - expenseTotal;
+    document.getElementById("totalIncome").innerText = incomeTotal.toFixed(2);
+    document.getElementById("totalExpenses").innerText = expenseTotal.toFixed(2);
+    
+    const remainingBudget = (monthlyIncome + incomeTotal) - expenseTotal;
     document.getElementById("remainingBudget").innerText = remainingBudget.toFixed(2);
-    document.getElementById("savingsProgress").innerText = ((remainingBudget / savingsGoal) * 100).toFixed(2) + '%';
+
+    const savingsPercentage = savingsGoal ? ((remainingBudget / savingsGoal) * 100).toFixed(2) : 0;
+    document.getElementById("savingsProgress").innerText = savingsPercentage + '%';
+
+    renderTransactionHistory();
+    renderCharts();
 }
 
 function saveData() {
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('monthlyIncome', monthlyIncome);
+    localStorage.setItem('savingsGoal', savingsGoal);
+}
+
+function loadData() {
+    monthlyIncome = parseFloat(localStorage.getItem('monthlyIncome')) || 0;
+    savingsGoal = parseFloat(localStorage.getItem('savingsGoal')) || 0;
 }
 
 function loadTransactions() {
-    transactions.forEach((transaction, index) => {
+    transactions.forEach(transaction => {
         if (transaction.type === 'income') {
             incomeTotal += transaction.amount;
         } else {
             expenseTotal += transaction.amount;
         }
     });
-    renderTransactionHistory();
 }
 
 function renderTransactionHistory() {
@@ -74,14 +102,14 @@ function renderTransactionHistory() {
         const item = document.createElement("li");
         item.classList.add("transaction-item");
         item.innerHTML = `
-            ${transaction.date} - ${transaction.type === 'income' ? transaction.source : transaction.name} - ${transaction.amount}
+            ${transaction.date} - ${transaction.type === 'income' ? transaction.source : transaction.name} - ${transaction.amount.toFixed(2)}
             <button onclick="deleteTransaction(${index})">Delete</button>
         `;
         historyList.appendChild(item);
     });
 }
 
-// Charts
+// 📊 CHARTS
 function renderCharts() {
     const ctxBar = document.getElementById("barChart").getContext("2d");
     new Chart(ctxBar, {
@@ -116,7 +144,7 @@ function renderCharts() {
     new Chart(ctxLine, {
         type: 'line',
         data: {
-            labels: transactions.map(t => t.date),
+            labels: transactions.filter(t => t.type === 'expense').map(t => t.date),
             datasets: [{
                 label: 'Overall Expenses',
                 data: transactions.filter(t => t.type === 'expense').map(t => t.amount),
