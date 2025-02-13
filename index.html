@@ -6,11 +6,12 @@
     <title>Personal Finance Manager</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <h1>Better finance...Better future</h1>
-        
+        <h1>Better Finance, Better Future</h1>
+
         <div class="monthly-setup">
             <h2>Monthly Setup</h2>
             <label for="income">Monthly Income:</label>
@@ -20,7 +21,6 @@
             <button onclick="setMonthlySetup()">Set Monthly Setup</button>
         </div>
 
-        
         <div class="overview">
             <h2>Overview</h2>
             <p>Total Income: <span id="totalIncome">0</span></p>
@@ -29,17 +29,15 @@
             <p>Savings Progress: <span id="savingsProgress">0%</span></p>
         </div>
 
-       
         <div class="forms">
             <h2>Add Transactions</h2>
-            
             <div>
                 <h3>Income</h3>
                 <input type="text" id="incomeSource" placeholder="Income Source">
                 <input type="number" id="incomeAmount" placeholder="Amount">
                 <button onclick="addIncome()">Add Income</button>
             </div>
-           
+
             <div>
                 <h3>Expense</h3>
                 <input type="text" id="expenseName" placeholder="Expense Name">
@@ -55,19 +53,19 @@
             </div>
         </div>
 
-       
         <div class="history">
             <h2>Transaction History</h2>
             <ul id="transactionHistory"></ul>
         </div>
 
-        
         <div class="charts">
             <h2>Charts</h2>
             <canvas id="barChart"></canvas>
             <canvas id="pieChart"></canvas>
             <canvas id="lineChart"></canvas>
         </div>
+
+        <button id="exportBtn">Export to PDF</button>
     </div>
 
     <script src="script.js"></script>
